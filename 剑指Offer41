@@ -1,0 +1,33 @@
+剑指Offer41 求数据流的中位数
+
+首先要把题读懂：
+什么是中位数？数据流里的数据要进行排序的！
+1）如果数据流有奇数个数值，那么中位数就是 最中间的数值。
+2）如果数据流有偶数个数值，那么中位数就是 中间两个数的平均值。
+
+因为数据是源源不断的，所以如果把所有的数据都存在一个容器里，
+每次都进行排序，显然是不现实的。
+
+因此我们考虑将目前已经进入数据流的数据分为两部分：
+1）比较小的那部分数字，记为集合B。
+2）比较大的那部分数字，记为集合A。
+
+class MedianFinder {
+	Queue<Integer> A, B;  //两个队列，A，B
+	public MedianFinder() { //初始化的时候，A为小顶堆，保存较大的那部分数字；B为大顶堆，保存较小的那部分数字。
+		A = new PriorityQueue<>();
+		B = new PriorityQueue<>((x, y) -> (y - x));
+	}
+	public void addNum(int num) {
+		if(A.size() != B.size()) {  //如果A和B的数量不相等（意味着目前数据流里有奇数个数字）
+			A.add(num); //需要做的是向较小的那部分假如目前的那个数字，也就是集合B。
+			B.add(A.poll());  //但是集合B是大顶堆，所以要把A弹出的数字加入到B中。
+		} else {
+			B.add(num);
+			A.add(B.poll());
+		}
+	}
+	public double findMedian(){
+		return A.size() != B.size() : A.peek() : (A.peek() + B.peek()) / 2.0;
+	}
+}
